@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#164e63">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="都道府県クイズ">
+  <meta name="description" content="都道府県と県庁所在地を楽しく覚える、小学3年生向けのクイズ。">
+  <title>都道府県クイズ | 県庁所在地にチャレンジ</title>
+  <style>
+    :root { font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif; color: #173c4c; background: #e8f8f6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; background: radial-gradient(circle at 7% 6%, #fff6c2 0 9%, transparent 26%), radial-gradient(circle at 94% 80%, #beece4 0 9%, transparent 27%), #e8f8f6; }
+    button { font: inherit; cursor: pointer; touch-action: manipulation; }
+    button:focus-visible { outline: 4px solid #ffad4c; outline-offset: 3px; }
+    .app { width: min(100% - 32px, 760px); margin: auto; padding: 24px 0 max(32px, env(safe-area-inset-bottom)); }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: .03em; color: #164e63; }
+    .brand-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 15px; color: white; background: #16a6a0; box-shadow: 0 5px 0 #0c7777; font-size: 25px; }
+    .grade { padding: 7px 12px; border-radius: 999px; background: #fff; color: #276579; font-weight: 800; font-size: .88rem; white-space: nowrap; }
+    main { background: #fff; border: 2px solid #d0e9e5; border-radius: 30px; box-shadow: 0 16px 0 #c4e8e3, 0 24px 38px #174a5330; padding: clamp(20px, 5vw, 42px); position: relative; overflow: hidden; }
+    main::before { content: ""; position: absolute; top: -70px; right: -80px; width: 220px; height: 220px; background: #dff7ed; border-radius: 50%; pointer-events: none; }
+    .screen { position: relative; z-index: 1; }
+    h1, h2, p { margin: 0; }
+    .eyebrow { display: inline-block; background: #ffec9b; padding: 6px 13px; border-radius: 999px; color: #805000; font-size: .85rem; font-weight: 900; letter-spacing: .05em; }
+    h1 { font-size: clamp(2.1rem, 7vw, 3.5rem); line-height: 1.22; letter-spacing: -.04em; margin: 17px 0 12px; }
+    h1 .accent { color: #ee6c45; }
+    .intro { font-size: 1.05rem; line-height: 1.8; color: #466777; }
+    .mascot { font-size: 4.3rem; line-height: 1; margin: 23px 0 8px; filter: drop-shadow(0 8px 0 #dcefeb); }
+    .setup { margin-top: 28px; display: grid; gap: 20px; }
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    legend { font-weight: 900; margin-bottom: 10px; font-size: 1rem; }
+    .segments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .segments.two { grid-template-columns: repeat(2, 1fr); }
+    .segment { border: 2px solid #d8eae8; border-radius: 14px; background: #f7fbfa; padding: 11px 5px; font-size: .92rem; font-weight: 800; min-height: 49px; color: #315768; }
+    .segment[aria-pressed="true"] { border-color: #15a49d; background: #d8f6ed; color: #075f61; box-shadow: inset 0 0 0 1px #15a49d; }
+    .primary { border: none; border-radius: 17px; background: #ef7049; color: white; font-size: 1.17rem; font-weight: 900; padding: 16px 25px; width: 100%; box-shadow: 0 6px 0 #b64932; min-height: 57px; }
+    .primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #b64932; }
+    .tip { text-align: center; font-size: .83rem; color: #69818c; margin-top: 16px; }
+    .quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .95rem; font-weight: 900; }
+    .progress-text { color: #257c80; }
+    .score { color: #b95924; background: #fff1d7; border-radius: 999px; padding: 7px 12px; }
+    .bar { height: 12px; border-radius: 999px; background: #e5efec; overflow: hidden; margin: 14px 0 29px; }
+    .bar > div { height: 100%; border-radius: inherit; background: #18a99e; transition: width .3s ease; }
+    .question-type { display: inline-block; background: #e8f2ff; color: #28598b; padding: 7px 12px; border-radius: 9px; font-weight: 900; font-size: .88rem; }
+    .question { font-size: clamp(1.45rem, 4.8vw, 2rem); line-height: 1.5; font-weight: 900; margin: 17px 0 24px; }
+    .question ruby { ruby-position: over; white-space: nowrap; color: #e46b45; }
+    rt { font-size: .46em; font-weight: 700; color: #81909a; }
+    .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .answer { min-height: 104px; padding: 13px 10px; background: #f8fbfb; border: 2px solid #cfe3e0; border-radius: 17px; color: #173c4c; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: background .12s, transform .12s; }
+    .answer:not(:disabled):hover { background: #ebf8f6; transform: translateY(-2px); }
+    .answer .reading { font-size: .78rem; color: #69828d; line-height: 1.25; }
+    .answer .name { font-size: clamp(1.08rem, 3.2vw, 1.45rem); font-weight: 900; line-height: 1.3; }
+    .answer.correct { border-color: #1bac83; background: #d8f8e9; color: #075a45; }
+    .answer.wrong { border-color: #eb745f; background: #ffebe5; color: #a63d2d; }
+    .answer:disabled { cursor: default; }
+    .answer:disabled:not(.correct):not(.wrong) { opacity: .56; }
+    .feedback { margin-top: 20px; border-radius: 16px; padding: 15px 17px; background: #e2f8ec; color: #175941; line-height: 1.6; font-weight: 700; }
+    .feedback.bad { background: #fff1e5; color: #8b4829; }
+    .feedback strong { display: block; font-size: 1.25rem; margin-bottom: 3px; }
+    .next { margin-top: 18px; }
+    .quiet { display: block; background: transparent; border: none; color: #5f7985; text-decoration: underline; text-underline-offset: 3px; padding: 12px; margin: 17px auto 0; font-weight: 700; }
+    .result { text-align: center; }
+    .result .mascot { font-size: 4.6rem; }
+    .result h2 { font-size: clamp(1.9rem, 6vw, 2.7rem); margin: 16px 0 9px; }
+    .result .big-score { font-size: 3.4rem; font-weight: 900; color: #e86842; margin: 12px 0; }
+    .result p { color: #526d79; line-height: 1.7; }
+    .result .primary { margin-top: 24px; }
+    .secondary { border: 2px solid #18a49e; color: #0b7371; background: #ebfbf7; border-radius: 17px; font-size: 1rem; font-weight: 900; padding: 14px 20px; width: 100%; margin-top: 15px; }
+    .hidden { display: none !important; }
+    footer { text-align: center; margin-top: 32px; color: #62838c; font-size: .82rem; line-height: 1.6; }
+    @media (max-width: 520px) { .app { width: min(100% - 24px, 760px); padding-top: 14px; } main { border-radius: 24px; padding: 23px 17px 28px; } .answers { gap: 9px; } .answer { min-height: 91px; } .segment { font-size: .82rem; } }
+    @media (max-width: 360px) { .answers { grid-template-columns: 1fr; } .answer { min-height: 64px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header><div class="brand"><span class="brand-icon" aria-hidden="true">✿</span><span>にっぽん はっけん！</span></div><span class="grade">小学３年生から</span></header>
+    <main>
+      <section id="home" class="screen">
+        <span class="eyebrow">あそんで おぼえよう</span>
+        <h1>都道府県<span class="accent">クイズ</span></h1>
+        <p class="intro">県の名前と県庁所在地、いくつわかるかな？<br>４つの中から正しい答えをえらんでね。</p>
+        <div class="mascot" aria-hidden="true">🗾</div>
+        <div class="setup">
+          <fieldset><legend>なにを答える？</legend><div class="segments" id="mode-options">
+            <button type="button" class="segment" data-mode="mixed" aria-pressed="true">まぜて出題</button>
+            <button type="button" class="segment" data-mode="capital" aria-pressed="false">所在地を答える</button>
+            <button type="button" class="segment" data-mode="prefecture" aria-pressed="false">県名を答える</button>
+          </div></fieldset>
+          <fieldset><legend>何問にする？</legend><div class="segments two" id="length-options">
+            <button type="button" class="segment" data-length="10" aria-pressed="true">10問コース</button>
+            <button type="button" class="segment" data-length="47" aria-pressed="false">全国47問</button>
+          </div></fieldset>
+          <button type="button" id="start" class="primary">クイズをはじめる</button>
+        </div>
+        <p class="tip">問題は毎回ランダムに変わるよ</p>
+      </section>
+      <section id="game" class="screen hidden" aria-label="クイズ">
+        <div class="quiz-top"><span class="progress-text" id="progress-label"></span><span class="score" id="score-label"></span></div>
+        <div class="bar" aria-hidden="true"><div id="progress-bar"></div></div>
+        <span class="question-type" id="question-type"></span>
+        <h2 class="question" id="question"></h2>
+        <div class="answers" id="answers"></div>
+        <div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+        <button type="button" id="next" class="primary next hidden">つぎの問題へ</button>
+        <button type="button" id="quit" class="quiet">さいしょにもどる</button>
+      </section>
+      <section id="result" class="screen result hidden" aria-live="polite">
+        <div class="mascot" aria-hidden="true" id="result-emoji">🎉</div>
+        <h2 id="result-heading">おつかれさま！</h2>
+        <div class="big-score" id="result-score"></div>
+        <p id="result-message"></p>
+        <button type="button" id="retry" class="primary">もう一度あそぶ</button>
+        <button type="button" id="review" class="secondary hidden">まちがえた問題にチャレンジ</button>
+        <button type="button" id="back-home" class="quiet">コースをえらびなおす</button>
+      </section>
+    </main>
+    <footer>47都道府県に対応しています。東京都の答えは「東京」としています。<br>東京都庁がある場所は新宿区です。</footer>
+  </div>
+  <script>
+    const PLACES = [
+      ["北海道","ほっかいどう","札幌","さっぽろ"],["青森県","あおもりけん","青森","あおもり"],["岩手県","いわてけん","盛岡","もりおか"],["宮城県","みやぎけん","仙台","せんだい"],["秋田県","あきたけん","秋田","あきた"],["山形県","やまがたけん","山形","やまがた"],["福島県","ふくしまけん","福島","ふくしま"],
+      ["茨城県","いばらきけん","水戸","みと"],["栃木県","とちぎけん","宇都宮","うつのみや"],["群馬県","ぐんまけん","前橋","まえばし"],["埼玉県","さいたまけん","さいたま","さいたま"],["千葉県","ちばけん","千葉","ちば"],["東京都","とうきょうと","東京","とうきょう"],["神奈川県","かながわけん","横浜","よこはま"],
+      ["新潟県","にいがたけん","新潟","にいがた"],["富山県","とやまけん","富山","とやま"],["石川県","いしかわけん","金沢","かなざわ"],["福井県","ふくいけん","福井","ふくい"],["山梨県","やまなしけん","甲府","こうふ"],["長野県","ながのけん","長野","ながの"],["岐阜県","ぎふけん","岐阜","ぎふ"],["静岡県","しずおかけん","静岡","しずおか"],["愛知県","あいちけん","名古屋","なごや"],
+      ["三重県","みえけん","津","つ"],["滋賀県","しがけん","大津","おおつ"],["京都府","きょうとふ","京都","きょうと"],["大阪府","おおさかふ","大阪","おおさか"],["兵庫県","ひょうごけん","神戸","こうべ"],["奈良県","ならけん","奈良","なら"],["和歌山県","わかやまけん","和歌山","わかやま"],
+      ["鳥取県","とっとりけん","鳥取","とっとり"],["島根県","しまねけん","松江","まつえ"],["岡山県","おかやまけん","岡山","おかやま"],["広島県","ひろしまけん","広島","ひろしま"],["山口県","やまぐちけん","山口","やまぐち"],["徳島県","とくしまけん","徳島","とくしま"],["香川県","かがわけん","高松","たかまつ"],["愛媛県","えひめけん","松山","まつやま"],["高知県","こうちけん","高知","こうち"],
+      ["福岡県","ふくおかけん","福岡","ふくおか"],["佐賀県","さがけん","佐賀","さが"],["長崎県","ながさきけん","長崎","ながさき"],["熊本県","くまもとけん","熊本","くまもと"],["大分県","おおいたけん","大分","おおいた"],["宮崎県","みやざきけん","宮崎","みやざき"],["鹿児島県","かごしまけん","鹿児島","かごしま"],["沖縄県","おきなわけん","那覇","なは"]
+    ].map(([pref, prefRead, city, cityRead]) => ({pref, prefRead, city, cityRead}));
+
+    const $ = (id) => document.getElementById(id);
+    const shuffle = (items) => { const copy = [...items]; for (let i=copy.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; } return copy; };
+    let mode = "mixed", length = 10, round = [], index = 0, correctCount = 0, missed = [], answered = false, reviewing = false;
+
+    function show(which) { for (const id of ["home","game","result"]) $(id).classList.toggle("hidden", id !== which); window.scrollTo({top:0,behavior:"instant"}); }
+    function setChoice(group, value, attribute) {
+      for (const button of $(group).querySelectorAll("button")) button.setAttribute("aria-pressed", String(button.dataset[attribute] === String(value)));
+    }
+    $("mode-options").addEventListener("click", (event) => { const b=event.target.closest("button[data-mode]"); if (b) { mode=b.dataset.mode; setChoice("mode-options",mode,"mode"); } });
+    $("length-options").addEventListener("click", (event) => { const b=event.target.closest("button[data-length]"); if (b) { length=Number(b.dataset.length); setChoice("length-options",length,"length"); } });
+
+    function start(redo = false) {
+      reviewing = redo;
+      round = redo ? shuffle(missed) : shuffle(PLACES).slice(0,length).map(place => ({place, direction: mode === "mixed" ? (Math.random()<.5 ? "capital":"prefecture") : mode}));
+      index = 0; correctCount = 0; missed = [];
+      show("game"); renderQuestion();
+    }
+
+    function displayName(place, direction) { return direction === "capital" ? place.city : place.pref; }
+    function displayRead(place, direction) { return direction === "capital" ? place.cityRead : place.prefRead; }
+    function promptName(place, direction) { return direction === "capital" ? [place.pref,place.prefRead] : [place.city,place.cityRead]; }
+    function answerChoices(question) {
+      const others = shuffle(PLACES.filter(p => p !== question.place && displayName(p,question.direction) !== displayName(question.place,question.direction)));
+      const choices = [question.place];
+      for (const candidate of others) {
+        if (!choices.some(p => displayName(p,question.direction) === displayName(candidate,question.direction))) choices.push(candidate);
+        if (choices.length === 4) break;
+      }
+      return shuffle(choices);
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const item = round[index], [name,read] = promptName(item.place,item.direction);
+      $("progress-label").textContent = `${index+1} / ${round.length} 問`;
+      $("score-label").textContent = `⭐ ${correctCount} せいかい`;
+      $("progress-bar").style.width = `${(index/round.length)*100}%`;
+      $("question-type").textContent = item.direction === "capital" ? "県庁所在地を答えよう" : "都道府県を答えよう";
+      const ruby = document.createElement("ruby"); ruby.textContent = name; const rt = document.createElement("rt"); rt.textContent=read; ruby.append(rt);
+      $("question").replaceChildren(ruby,document.createTextNode(item.direction === "capital" ? " の県庁所在地は？" : " がある都道府県は？"));
+      $("answers").replaceChildren();
+      for (const option of answerChoices(item)) {
+        const button=document.createElement("button"); button.type="button"; button.className="answer";
+        const reading=document.createElement("span"); reading.className="reading"; reading.textContent=displayRead(option,item.direction);
+        const label=document.createElement("span"); label.className="name"; label.textContent=displayName(option,item.direction);
+        button.append(reading,label); button.addEventListener("click",()=>choose(button,option)); $("answers").append(button);
+      }
+      $("feedback").classList.add("hidden"); $("next").classList.add("hidden");
+    }
+
+    function choose(button, option) {
+      if (answered) return;
+      answered=true;
+      const item=round[index], correct=option === item.place;
+      if (correct) correctCount++; else missed.push(item);
+      for (const b of $("answers").children) { b.disabled=true; if (b.querySelector(".name").textContent === displayName(item.place,item.direction)) b.classList.add("correct"); }
+      if (!correct) button.classList.add("wrong");
+      $("score-label").textContent=`⭐ ${correctCount} せいかい`;
+      $("progress-bar").style.width=`${((index+1)/round.length)*100}%`;
+      const message = $("feedback"); message.classList.toggle("bad",!correct); message.replaceChildren();
+      const heading=document.createElement("strong"); heading.textContent=correct ? "せいかい！ 🎉" : "おしい！ 答えを見ておぼえよう";
+      const detail=document.createElement("span"); detail.textContent=`${item.place.pref} の県庁所在地は ${item.place.city}。`;
+      message.append(heading,detail); message.classList.remove("hidden");
+      $("next").textContent=index === round.length-1 ? "けっかを見る" : "つぎの問題へ"; $("next").classList.remove("hidden"); $("next").focus();
+    }
+
+    function finish() {
+      show("result");
+      $("result-score").textContent=`${correctCount} / ${round.length}`;
+      const perfect=correctCount===round.length;
+      $("result-emoji").textContent=perfect ? "🏆" : correctCount >= round.length/2 ? "🎉" : "🌱";
+      $("result-heading").textContent=perfect ? "ぜんもん せいかい！" : "よくがんばったね！";
+      $("result-message").textContent=perfect ? "すごい！ ほかのコースにもチャレンジしてみよう。" : `まちがえた問題は ${missed.length} 問。もう一度ためしてみよう！`;
+      $("review").classList.toggle("hidden",missed.length===0);
+      $("retry").textContent=reviewing ? "新しい問題であそぶ" : "もう一度あそぶ";
+    }
+    $("start").addEventListener("click",()=>start());
+    $("next").addEventListener("click",()=>{ if (!answered) return; if (++index === round.length) finish(); else renderQuestion(); });
+    $("retry").addEventListener("click",()=>start());
+    $("review").addEventListener("click",()=>start(true));
+    $("quit").addEventListener("click",()=>show("home"));
+    $("back-home").addEventListener("click",()=>show("home"));
+    document.addEventListener("keydown",(event)=>{ if ($("game").classList.contains("hidden")) return; if (/^[1-4]$/.test(event.key) && !answered) $("answers").children[Number(event.key)-1]?.click(); else if (event.key==="Enter" && answered && document.activeElement !== $("quit")) { event.preventDefault(); $("next").click(); } });
+  </script>
+</body>
+</html>
